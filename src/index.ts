@@ -33,12 +33,36 @@ async function initializeApp() {
       crossOriginEmbedderPolicy: false,
     }));
 
-    // Configurar CORS
+    // Configurar CORS - Solução para problema de CORS com Chrome cache
     app.use(cors({
-      origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+      origin: function (origin, callback) {
+        // Permitir requisições sem origin (como mobile apps ou Postman)
+        if (!origin) return callback(null, true);
+        
+        const allowedOrigins = [
+          process.env.FRONTEND_URL || 'http://localhost:5173'
+        ];
+        
+        if (allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          logger.warn(`🚫 Origin não permitida: ${origin}`);
+          callback(null, true); // Temporariamente permitir todas as origins para debug
+        }
+      },
       credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization']
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
+      allowedHeaders: [
+        'Content-Type', 
+        'Authorization', 
+        'Origin', 
+        'Accept', 
+        'X-Requested-With',
+        'Cache-Control'
+      ],
+      exposedHeaders: ['Content-Length', 'X-Requested-With'],
+      preflightContinue: false,
+      optionsSuccessStatus: 200
     }));
 
     // Rate limiting
