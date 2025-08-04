@@ -1,123 +1,47 @@
-name: Build & Deploy to EC2
+name: Deploy to EC2 via SSH
 
 on:
   push:
     branches:
       - master
 
-env:
-  IMAGE_NAME: ggj8efv5gssrcdwjdzwidxei/elven-sre-api
-
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v3
-
-      - name: Login no Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build da imagem Docker
-        run: |
-          docker build -t $IMAGE_NAME:latest --target production .
-
-      - name: Push para o Docker Hub
-        run: |
-          docker push $IMAGE_NAME:latest
-
-      - name: Deploy na EC2 via SSH
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: IMAGE_NAME
           script: |
-              REPO_DIR=elven-sre-api
-              IMAGE_NAME=ggj8efv5gssrcdwjdzwidxei/elven-sre-api
 
-              # Remove o diretório anterior, se existir
-              rm -rf $REPO_DIR
+            # Caminho para o app
+            APP_DIR=elven-sre-api
 
-              # Clona o repositório
-              git clone https://github.com/VitoorFranca/$REPO_DIR.git
-              cd $REPO_DIR
+            # Remove o diretório anterior (opcional)
+            rm -rf $APP_DIR
 
-              # Faz pull da imagem mais recente
-              docker pull $IMAGE_NAME:latest
+            # Clona o repositório na EC2
+            git clone https://github.com/VitorFranca/elven-sre-api.git $APP_DIR
+            cd $APP_DIR
 
-              # Para e remove containers existentes
-              docker stop elven-api jaeger otel-collector elven-mysql || true
-              docker rm elven-api jaeger otel-collector elven-mysql || true
+            # Cria arquivo .env com as variáveis
+            cat <<EOF > .env
+            NODE_ENV=production
+            PORT=3000
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+            OTEL_EXPORTER_OTLP_ENDPOINT=${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+            LOG_LEVEL=${{ secrets.LOG_LEVEL }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            EOF
 
-              # Remove a rede se existir
-              docker network rm elven-network || true
-
-              # Cria a rede
-              docker network create elven-network
-
-              # Roda o MySQL
-              docker run -d \
-                --name elven-mysql \
-                --network elven-network \
-                --restart unless-stopped \
-                -e MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }} \
-                -e MYSQL_DATABASE=${{ secrets.DB_NAME }} \
-                -e MYSQL_USER=${{ secrets.DB_USER }} \
-                -e MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }} \
-                -p 3306:3306 \
-                -v mysql_data:/var/lib/mysql \
-                mysql:8.0
-
-              # Aguarda o MySQL inicializar
-              sleep 30
-
-              # Roda o Jaeger
-              docker run -d \
-                --name jaeger \
-                --network elven-network \
-                -e COLLECTOR_OTLP_ENABLED=true \
-                -e COLLECTOR_OTLP_HTTP_ENABLED=true \
-                -e COLLECTOR_OTLP_GRPC_ENABLED=true \
-                -e COLLECTOR_OTLP_GRPC_HOST_PORT=:4317 \
-                -e COLLECTOR_OTLP_HTTP_HOST_PORT=:4318 \
-                -p 8081:16686 \
-                -p 14268:14268 \
-                -p 14250:14250 \
-                -p 4317:4317 \
-                -p 4318:4318 \
-                jaegertracing/all-in-one:latest
-
-              # Roda o OpenTelemetry Collector
-              docker run -d \
-                --name otel-collector \
-                --network elven-network \
-                -v $(pwd)/otel-collector-config.yaml:/etc/otel-collector-config.yaml \
-                -p 1888:1888 \
-                -p 13133:13133 \
-                -p 14317:4317 \
-                -p 14318:4318 \
-                -p 55679:55679 \
-                otel/opentelemetry-collector:latest \
-                --config=/etc/otel-collector-config.yaml
-
-              # Aguarda o Jaeger inicializar
-              sleep 10
-
-              # Roda a API
-              docker run -d \
-                --name elven-api \
-                --network elven-network \
-                -p 3000:3000 \
-                -e OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318 \
-                -e DB_HOST=${{ secrets.DB_HOST }} \
-                -e DB_PORT=${{ secrets.DB_PORT }} \
-                -e DB_USER=${{ secrets.DB_USER }} \
-                -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-                -e DB_NAME=${{ secrets.DB_NAME }} \
-                $IMAGE_NAME:latest
+            # Sobe os containers com build
+            docker compose down
+            docker compose up --build -d
