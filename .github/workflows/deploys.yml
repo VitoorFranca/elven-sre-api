@@ -37,86 +37,85 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            REPO_DIR=elven-sre-api
+              REPO_DIR=elven-sre-api
 
-            # Remove o diretório anterior, se existir
-            rm -rf $REPO_DIR
+              # Remove o diretório anterior, se existir
+              rm -rf $REPO_DIR
 
-            # Clona o repositório
-            git clone https://github.com/VitoorFranca/$REPO_DIR.git
-            cd $REPO_DIR
+              # Clona o repositório
+              git clone https://github.com/VitoorFranca/$REPO_DIR.git
+              cd $REPO_DIR
 
-            # Faz pull da imagem mais recente
-            docker pull $IMAGE_NAME:latest
+              # Faz pull da imagem mais recente
+              docker pull $IMAGE_NAME:latest
 
-            # Para e remove containers existentes
-            docker stop elven-api jaeger otel-collector elven-mysql || true
-            docker rm elven-api jaeger otel-collector elven-mysql || true
+              # Para e remove containers existentes
+              docker stop elven-api jaeger otel-collector elven-mysql || true
+              docker rm elven-api jaeger otel-collector elven-mysql || true
 
-            # Remove a rede se existir
-            docker network rm elven-network || true
+              # Remove a rede se existir
+              docker network rm elven-network || true
 
-            # Cria a rede
-            docker network create elven-network
+              # Cria a rede
+              docker network create elven-network
 
-            # Roda o MySQL
-            docker run -d \
-              --name elven-mysql \
-              --network elven-network \
-              --restart unless-stopped \
-              -e MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e MYSQL_DATABASE=${{ secrets.DB_NAME }} \
-              -e MYSQL_USER=${{ secrets.DB_USER }} \
-              -e MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -p 3306:3306 \
-              -v mysql_data:/var/lib/mysql \
-              mysql:8.0
+              # Roda o MySQL
+              docker run -d \
+                --name elven-mysql \
+                --network elven-network \
+                --restart unless-stopped \
+                -e MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }} \
+                -e MYSQL_DATABASE=${{ secrets.DB_NAME }} \
+                -e MYSQL_USER=${{ secrets.DB_USER }} \
+                -e MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }} \
+                -p 3306:3306 \
+                -v mysql_data:/var/lib/mysql \
+                mysql:8.0
 
-            # Aguarda o MySQL inicializar
-            sleep 30
+              # Aguarda o MySQL inicializar
+              sleep 30
 
-            # Roda o Jaeger
-            docker run -d \
-              --name jaeger \
-              --network elven-network \
-              -e COLLECTOR_OTLP_ENABLED=true \
-              -e COLLECTOR_OTLP_HTTP_ENABLED=true \
-              -e COLLECTOR_OTLP_GRPC_ENABLED=true \
-              -e COLLECTOR_OTLP_GRPC_HOST_PORT=:4317 \
-              -e COLLECTOR_OTLP_HTTP_HOST_PORT=:4318 \
-              -p 8081:16686 \
-              -p 14268:14268 \
-              -p 14250:14250 \
-              -p 4317:4317 \
-              -p 4318:4318 \
-              jaegertracing/all-in-one:latest
+              # Roda o Jaeger
+              docker run -d \
+                --name jaeger \
+                --network elven-network \
+                -e COLLECTOR_OTLP_ENABLED=true \
+                -e COLLECTOR_OTLP_HTTP_ENABLED=true \
+                -e COLLECTOR_OTLP_GRPC_ENABLED=true \
+                -e COLLECTOR_OTLP_GRPC_HOST_PORT=:4317 \
+                -e COLLECTOR_OTLP_HTTP_HOST_PORT=:4318 \
+                -p 8081:16686 \
+                -p 14268:14268 \
+                -p 14250:14250 \
+                -p 4317:4317 \
+                -p 4318:4318 \
+                jaegertracing/all-in-one:latest
 
-            # Roda o OpenTelemetry Collector
-            docker run -d \
-              --name otel-collector \
-              --network elven-network \
-              -v $(pwd)/otel-collector-config.yaml:/etc/otel-collector-config.yaml \
-              -p 1888:1888 \
-              -p 13133:13133 \
-              -p 14317:4317 \
-              -p 14318:4318 \
-              -p 55679:55679 \
-              otel/opentelemetry-collector:latest \
-              --config=/etc/otel-collector-config.yaml
+              # Roda o OpenTelemetry Collector
+              docker run -d \
+                --name otel-collector \
+                --network elven-network \
+                -v $(pwd)/otel-collector-config.yaml:/etc/otel-collector-config.yaml \
+                -p 1888:1888 \
+                -p 13133:13133 \
+                -p 14317:4317 \
+                -p 14318:4318 \
+                -p 55679:55679 \
+                otel/opentelemetry-collector:latest \
+                --config=/etc/otel-collector-config.yaml
 
-            # Aguarda o Jaeger inicializar
-            sleep 10
+              # Aguarda o Jaeger inicializar
+              sleep 10
 
-            # Roda a API
-            docker run -d \
-              --name elven-api \
-              --network elven-network \
-              -p 3000:3000 \
-              -e OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318 \
-              -e FRONTEND_URL=${{ secrets.FRONTEND_URL }} \
-              -e DB_HOST=${{ secrets.DB_HOST }} \
-              -e DB_PORT=${{ secrets.DB_PORT }} \
-              -e DB_USER=${{ secrets.DB_USER }} \
-              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e DB_NAME=${{ secrets.DB_NAME }} \
-              $IMAGE_NAME:latest
+              # Roda a API
+              docker run -d \
+                --name elven-api \
+                --network elven-network \
+                -p 3000:3000 \
+                -e OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318 \
+                -e DB_HOST=${{ secrets.DB_HOST }} \
+                -e DB_PORT=${{ secrets.DB_PORT }} \
+                -e DB_USER=${{ secrets.DB_USER }} \
+                -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+                -e DB_NAME=${{ secrets.DB_NAME }} \
+                "$IMAGE_NAME:latest"
