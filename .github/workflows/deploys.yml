@@ -25,7 +25,7 @@ jobs:
             rm -rf $APP_DIR
 
             # Clona o repositório na EC2
-            git clone https://github.com/VitorFranca/elven-sre-api.git $APP_DIR
+            git clone https://github.com/VitoorFranca/elven-sre-api.git $APP_DIR
             cd $APP_DIR
 
             # Cria arquivo .env com as variáveis
