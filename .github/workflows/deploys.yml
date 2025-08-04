@@ -36,8 +36,10 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: IMAGE_NAME
           script: |
               REPO_DIR=elven-sre-api
+              IMAGE_NAME=ggj8efv5gssrcdwjdzwidxei/elven-sre-api
 
               # Remove o diretório anterior, se existir
               rm -rf $REPO_DIR
@@ -118,4 +120,4 @@ jobs:
                 -e DB_USER=${{ secrets.DB_USER }} \
                 -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
                 -e DB_NAME=${{ secrets.DB_NAME }} \
-                "$IMAGE_NAME:latest"
+                $IMAGE_NAME:latest
