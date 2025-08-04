@@ -37,9 +37,20 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+
+            IMAGE_NAME=ggj8efv5gssrcdwjdzwidxei/elven-sre-api
+
             docker pull $IMAGE_NAME:latest
-            docker stop elven-sre-api || true
-            docker rm elven-sre-api || true
+
+            # Verifica se o container existe antes de tentar parar e remover
+            if [ $(docker ps -a -q -f name=elven-sre-api) ]; then
+              echo "Container encontrado. Parando e removendo..."
+              docker stop elven-sre-api
+              docker rm elven-sre-api
+            else
+              echo "Container não encontrado. Pulando stop e rm."
+            fi
+
             docker run -d \
               --name elven-sre-api \
               -e NODE_ENV=production \
