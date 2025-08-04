@@ -3,7 +3,7 @@ name: Build & Deploy to EC2
 on:
   push:
     branches:
-      - main
+      - master
 
 env:
   IMAGE_NAME: ggj8efv5gssrcdwjdzwidxei/elven-sre-api
