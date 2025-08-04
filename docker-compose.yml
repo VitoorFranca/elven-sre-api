@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   elven-api:
+    image: ggj8efv5gssrcdwjdzwidxei/elven-sre-api:latest
     build:
       context: .
       dockerfile: Dockerfile
