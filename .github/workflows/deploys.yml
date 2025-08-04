@@ -1,0 +1,48 @@
+name: Build & Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: ggj8efv5gssrcdwjdzwidxei/elven-sre-api
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build da imagem Docker
+        run: |
+          docker build -t $IMAGE_NAME:latest --target production .
+
+      - name: Push para o Docker Hub
+        run: |
+          docker push $IMAGE_NAME:latest
+
+      - name: Deploy na EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull $IMAGE_NAME:latest
+            docker stop elven-sre-api || true
+            docker rm elven-sre-api || true
+            docker run -d \
+              --name elven-sre-api \
+              -e NODE_ENV=production \
+              -e API_URL='${{ secrets.API_URL }}' \
+              -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
+              $IMAGE_NAME:latest

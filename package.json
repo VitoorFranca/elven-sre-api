@@ -1,0 +1,55 @@
+{
+  "name": "elven-api",
+  "version": "1.0.0",
+  "description": "Backend API para prova técnica SRE Elven Services",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start:watch": "node --watch dist/index.js",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "docker:build": "docker build -t elven-api .",
+    "docker:run": "docker run -p 3000:3000 elven-api"
+  },
+  "keywords": [],
+  "author": "elven-sre",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "mysql2": "^3.6.5",
+    "typeorm": "^0.3.17",
+    "reflect-metadata": "^0.1.13",
+    "dotenv": "^16.3.1",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/sdk-node": "^0.52.1",
+    "@opentelemetry/auto-instrumentations-node": "^0.52.1",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.52.1",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.52.1",
+    "@opentelemetry/resources": "^1.21.0",
+    "@opentelemetry/semantic-conventions": "^1.21.0",
+    "@opentelemetry/sdk-metrics": "^1.21.0",
+    "@opentelemetry/sdk-trace-base": "^1.21.0",
+    "winston": "^3.11.0",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.2",
+    "ts-node-dev": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.8"
+  }
+} 
