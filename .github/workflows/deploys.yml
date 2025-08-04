@@ -34,7 +34,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
+          username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull $IMAGE_NAME:latest
@@ -43,6 +43,13 @@ jobs:
             docker run -d \
               --name elven-sre-api \
               -e NODE_ENV=production \
-              -e API_URL='${{ secrets.API_URL }}' \
-              -e DATABASE_URL='${{ secrets.DATABASE_URL }}' \
+              -e PORT=3000 \
+              -e FRONTEND_URL='${{ secrets.FRONTEND_URL }}' \
+              -e OTEL_EXPORTER_OTLP_ENDPOINT='${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}' \
+              -e LOG_LEVEL='${{ secrets.LOG_LEVEL }}' \
+              -e DB_HOST='${{ secrets.DB_HOST }}' \
+              -e DB_PORT='${{ secrets.DB_PORT }}' \
+              -e DB_USER='${{ secrets.DB_USER }}' \
+              -e DB_PASSWORD='${{ secrets.DB_PASSWORD }}' \
+              -e DB_NAME='${{ secrets.DB_NAME }}' \
               $IMAGE_NAME:latest
