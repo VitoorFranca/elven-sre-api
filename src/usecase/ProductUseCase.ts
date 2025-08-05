@@ -34,7 +34,7 @@ export class ProductUseCase implements IProductUseCase {
         });
         
         span.setAttribute('products.count', products.length);
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return products;
       } catch (error) {
@@ -73,7 +73,7 @@ export class ProductUseCase implements IProductUseCase {
           span.setAttribute('product.found', false);
         }
         
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return product;
       } catch (error) {
@@ -106,7 +106,6 @@ export class ProductUseCase implements IProductUseCase {
           entity: 'products'
         });
         
-        // Incrementar contador de livros criados
         metrics.productsCreated.add(1, {
           product_name: newProduct.name,
           category: newProduct.category
@@ -114,7 +113,7 @@ export class ProductUseCase implements IProductUseCase {
         
         span.setAttribute('product.id', newProduct.id);
         span.setAttribute('product.created_at', newProduct.createdAt.toISOString());
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return newProduct;
       } catch (error) {
@@ -148,7 +147,6 @@ export class ProductUseCase implements IProductUseCase {
         });
         
         if (updatedProduct) {
-          // Incrementar contador de livros atualizados
           metrics.productsUpdated.add(1, {
             product_name: updatedProduct.name,
             category: updatedProduct.category
@@ -157,7 +155,7 @@ export class ProductUseCase implements IProductUseCase {
           span.setAttribute('product.updated_at', updatedProduct.updatedAt.toISOString());
         }
         
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return updatedProduct;
       } catch (error) {
@@ -190,14 +188,13 @@ export class ProductUseCase implements IProductUseCase {
         });
         
         if (result) {
-          // Incrementar contador de livros deletados
           metrics.productsDeleted.add(1, {
             product_id: id.toString()
           });
         }
         
         span.setAttribute('product.deleted', result);
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return result;
       } catch (error) {

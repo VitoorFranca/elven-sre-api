@@ -10,10 +10,10 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'elven_sre',
-  synchronize: false, // Desabilitar synchronize em produção
+  synchronize: false,
   logging: process.env.NODE_ENV === 'development',
   entities: [Product, Order],
-  migrations: ['dist/database/migrations/*.js'], // Caminho para migrations compiladas
+  migrations: ['dist/database/migrations/*.js'],
   migrationsTableName: 'migrations',
   subscribers: [],
 });
@@ -23,7 +23,6 @@ export const initializeDatabase = async (): Promise<void> => {
     await AppDataSource.initialize();
     console.log('Database connection established successfully');
     
-    // Inserir dados de exemplo se estiver em desenvolvimento
     if (process.env.NODE_ENV === 'development') {
       await insertSampleData();
     }
@@ -37,7 +36,6 @@ const insertSampleData = async (): Promise<void> => {
   const productRepository = AppDataSource.getRepository(Product);
   const orderRepository = AppDataSource.getRepository(Order);
 
-  // Verificar se já existem livros
   const existingProducts = await productRepository.count();
   if (existingProducts === 0) {
     const sampleProducts = [
@@ -79,7 +77,6 @@ const insertSampleData = async (): Promise<void> => {
     console.log('Sample books inserted');
   }
 
-  // Verificar se já existem pedidos
   const existingOrders = await orderRepository.count();
   if (existingOrders === 0) {
     const sampleOrders = [

@@ -7,7 +7,7 @@ export function errorHandler(
   res: Response,
   next: NextFunction
 ) {
-  logger.error('❌ Erro não tratado:', {
+  logger.error('Erro não tratado:', {
     error: error.message,
     stack: error.stack,
     url: req.url,

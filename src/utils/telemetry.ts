@@ -3,7 +3,6 @@ import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentation
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { Resource } from '@opentelemetry/resources';
-// import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { trace, context } from '@opentelemetry/api';
 import { logger } from './logger';
 
@@ -13,34 +12,30 @@ let customMetrics: any = null;
 export function setupOpenTelemetry() {
   console.log('setupOpenTelemetry');
   console.log(process.env.OTEL_EXPORTER_OTLP_ENDPOINT);
-  // Verificar se já foi inicializado
+  
   if (sdk) {
     logger.info('OpenTelemetry já foi inicializado');
     return;
   }
 
   try {
-    // Configurar recursos
     const resource = new Resource({
       serviceName: 'elven-api',
       serviceVersion: '1.0.0',
       deploymentEnvironment: process.env.NODE_ENV || 'development',
     });
 
-    // Configurar exportador de traces
     const traceExporter = new OTLPTraceExporter({
       url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318/v1/traces',
       headers: {},
     });
 
-    // Criar SDK
     sdk = new NodeSDK({
       serviceName: 'elven-api',
       resource: resource,
       traceExporter: traceExporter,
       instrumentations: [
         getNodeAutoInstrumentations({
-          // Configurar instrumentações específicas
           '@opentelemetry/instrumentation-http': {
             enabled: true,
           },
@@ -54,15 +49,12 @@ export function setupOpenTelemetry() {
       ],
     });
 
-    // Inicializar SDK
     sdk.start();
-    logger.info('✅ OpenTelemetry inicializado com sucesso');
-    logger.info(`📊 Endpoint OTLP: ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318'}`);
+    logger.info('OpenTelemetry inicializado com sucesso');
+    logger.info(`Endpoint OTLP: ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318'}`);
 
-    // Inicializar métricas customizadas
     customMetrics = createCustomMetrics();
 
-    // Configurar graceful shutdown
     process.on('SIGTERM', () => {
       sdk?.shutdown()
         .then(() => {
@@ -76,7 +68,7 @@ export function setupOpenTelemetry() {
     });
 
   } catch (error: unknown) {
-    logger.error('❌ Erro na configuração do OpenTelemetry:', error);
+    logger.error('Erro na configuração do OpenTelemetry:', error);
   }
 }
 
@@ -89,31 +81,26 @@ export function getMeter() {
   return metrics.getMeter('elven-api');
 }
 
-// Função para capturar payload de resposta
 export function captureResponsePayload(payload: any, statusCode?: number) {
   try {
     const span = trace.getActiveSpan();
     if (span) {
-      // Capturar payload da resposta
       span.setAttribute('http.response.payload', JSON.stringify(payload));
       
-      // Capturar status code se fornecido
       if (statusCode) {
         span.setAttribute('http.status_code', statusCode);
       }
       
-      // Capturar tamanho da resposta
       const payloadSize = JSON.stringify(payload).length;
       span.setAttribute('http.response.size_bytes', payloadSize);
       
-      logger.debug('📊 Payload capturado no span:', { payloadSize, statusCode });
+      logger.debug('Payload capturado no span:', { payloadSize, statusCode });
     }
   } catch (error) {
-    logger.error('❌ Erro ao capturar payload:', error);
+    logger.error('Erro ao capturar payload:', error);
   }
 }
 
-// Função para capturar informações de erro
 export function captureError(error: Error, statusCode?: number) {
   try {
     const span = trace.getActiveSpan();
@@ -126,27 +113,23 @@ export function captureError(error: Error, statusCode?: number) {
         span.setAttribute('http.status_code', statusCode);
       }
       
-      // Registrar erro no span
       span.recordException(error);
       
-      logger.error('❌ Erro capturado no span:', error.message);
+      logger.error('Erro capturado no span:', error.message);
     }
   } catch (captureError) {
-    logger.error('❌ Erro ao capturar erro no span:', captureError);
+    logger.error('Erro ao capturar erro no span:', captureError);
   }
 }
 
-// Função para criar span customizado
 export function createCustomSpan(name: string, attributes?: Record<string, any>) {
   const tracer = getTracer();
   return tracer.startSpan(name, { attributes });
 }
 
-// Métricas customizadas
 export function createCustomMetrics() {
   const meter = getMeter();
   
-  // Contadores de negócio
   const productsCreated = meter.createCounter('products_created_total', {
     description: 'Total de livros criados'
   });
@@ -171,7 +154,6 @@ export function createCustomMetrics() {
     description: 'Total de mudanças de status de pedidos'
   });
   
-  // Histogramas de performance
   const databaseQueryDuration = meter.createHistogram('database_query_duration_seconds', {
     description: 'Duração das queries do banco de dados',
     unit: 's'
@@ -182,7 +164,6 @@ export function createCustomMetrics() {
     unit: 's'
   });
   
-  // Gauges para status
   const activeConnections = meter.createUpDownCounter('active_database_connections', {
     description: 'Conexões ativas com o banco de dados'
   });
@@ -192,7 +173,6 @@ export function createCustomMetrics() {
     unit: 'By'
   });
   
-  // Contadores de status HTTP
   const httpRequestsTotal = meter.createCounter('http_requests_total', {
     description: 'Total de requisições HTTP'
   });
@@ -224,13 +204,11 @@ export function getCustomMetrics() {
   return customMetrics;
 }
 
-// Função para inicializar telemetria de forma assíncrona
 export async function initializeTelemetry() {
   return new Promise<void>((resolve) => {
     setupOpenTelemetry();
-    // Aguardar um pouco para garantir que o SDK foi inicializado
     setTimeout(() => {
-      logger.info('🚀 Telemetria inicializada com sucesso');
+      logger.info('Telemetria inicializada com sucesso');
       resolve();
     }, 100);
   });

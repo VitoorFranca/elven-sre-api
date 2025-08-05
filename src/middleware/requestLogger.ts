@@ -6,7 +6,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
   
   res.on('finish', () => {
     const duration = Date.now() - start;
-    logger.info('🌐 Requisição processada', {
+    logger.info('Requisição processada', {
       method: req.method,
       url: req.url,
       status: res.statusCode,

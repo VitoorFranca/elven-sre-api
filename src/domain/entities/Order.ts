@@ -20,7 +20,7 @@ export class Order {
   customerEmail!: string;
 
   @Column({ type: 'text' })
-  items!: string; // JSON string of order items
+  items!: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   totalAmount!: number;

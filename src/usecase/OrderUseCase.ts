@@ -35,7 +35,7 @@ export class OrderUseCase implements IOrderUseCase {
         });
         
         span.setAttribute('orders.count', orders.length);
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return orders;
       } catch (error) {
@@ -76,7 +76,7 @@ export class OrderUseCase implements IOrderUseCase {
           span.setAttribute('order.found', false);
         }
         
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return order;
       } catch (error) {
@@ -111,7 +111,6 @@ export class OrderUseCase implements IOrderUseCase {
           entity: 'orders'
         });
         
-        // Incrementar contador de pedidos criados
         metrics.ordersCreated.add(1, {
           customer_name: newOrder.customerName,
           status: newOrder.status,
@@ -120,7 +119,7 @@ export class OrderUseCase implements IOrderUseCase {
         
         span.setAttribute('order.id', newOrder.id);
         span.setAttribute('order.created_at', newOrder.createdAt.toISOString());
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return newOrder;
       } catch (error) {
@@ -154,7 +153,6 @@ export class OrderUseCase implements IOrderUseCase {
         });
         
         if (updatedOrder) {
-          // Incrementar contador de pedidos atualizados
           metrics.ordersUpdated.add(1, {
             customer_name: updatedOrder.customerName,
             status: updatedOrder.status,
@@ -164,7 +162,7 @@ export class OrderUseCase implements IOrderUseCase {
           span.setAttribute('order.updated_at', updatedOrder.updatedAt.toISOString());
         }
         
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return updatedOrder;
       } catch (error) {
@@ -198,7 +196,6 @@ export class OrderUseCase implements IOrderUseCase {
         });
         
         if (updatedOrder) {
-          // Incrementar contador de mudanças de status
           metrics.ordersStatusChanged.add(1, {
             order_id: id.toString(),
             old_status: updatedOrder.status,
@@ -209,7 +206,7 @@ export class OrderUseCase implements IOrderUseCase {
           span.setAttribute('order.updated_at', updatedOrder.updatedAt.toISOString());
         }
         
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return updatedOrder;
       } catch (error) {
@@ -242,7 +239,7 @@ export class OrderUseCase implements IOrderUseCase {
         });
         
         span.setAttribute('order.deleted', result);
-        span.setStatus({ code: 1 }); // OK
+        span.setStatus({ code: 1 });
         
         return result;
       } catch (error) {

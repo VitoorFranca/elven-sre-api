@@ -4,123 +4,42 @@ export class CreateInitialTables1700000000000 implements MigrationInterface {
   name = 'CreateInitialTables1700000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Criar tabela products
     await queryRunner.createTable(
       new Table({
         name: 'products',
         columns: [
-          {
-            name: 'id',
-            type: 'int',
-            isPrimary: true,
-            isGenerated: true,
-            generationStrategy: 'increment',
-          },
-          {
-            name: 'name',
-            type: 'varchar',
-            length: '255',
-          },
-          {
-            name: 'description',
-            type: 'text',
-          },
-          {
-            name: 'price',
-            type: 'decimal',
-            precision: 10,
-            scale: 2,
-          },
-          {
-            name: 'stock',
-            type: 'int',
-          },
-          {
-            name: 'image',
-            type: 'varchar',
-            length: '255',
-            isNullable: true,
-          },
-          {
-            name: 'category',
-            type: 'varchar',
-            length: '100',
-          },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-          },
-          {
-            name: 'updatedAt',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
-          },
+          { name: 'id', type: 'int', isPrimary: true, isGenerated: true, generationStrategy: 'increment' },
+          { name: 'name', type: 'varchar', length: '255' },
+          { name: 'description', type: 'text' },
+          { name: 'price', type: 'decimal', precision: 10, scale: 2 },
+          { name: 'stock', type: 'int' },
+          { name: 'image', type: 'varchar', length: '255', isNullable: true },
+          { name: 'category', type: 'varchar', length: '100' },
+          { name: 'createdAt', type: 'timestamp', default: 'CURRENT_TIMESTAMP' },
+          { name: 'updatedAt', type: 'timestamp', default: 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' },
         ],
       }),
       true
     );
 
-    // Criar tabela orders
     await queryRunner.createTable(
       new Table({
         name: 'orders',
         columns: [
-          {
-            name: 'id',
-            type: 'int',
-            isPrimary: true,
-            isGenerated: true,
-            generationStrategy: 'increment',
-          },
-          {
-            name: 'customerName',
-            type: 'varchar',
-            length: '255',
-          },
-          {
-            name: 'customerEmail',
-            type: 'varchar',
-            length: '255',
-          },
-          {
-            name: 'items',
-            type: 'text',
-          },
-          {
-            name: 'totalAmount',
-            type: 'decimal',
-            precision: 10,
-            scale: 2,
-          },
-          {
-            name: 'status',
-            type: 'enum',
-            enum: ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
-            default: "'PENDING'",
-          },
-          {
-            name: 'shippingAddress',
-            type: 'text',
-          },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-          },
-          {
-            name: 'updatedAt',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
-          },
+          { name: 'id', type: 'int', isPrimary: true, isGenerated: true, generationStrategy: 'increment' },
+          { name: 'customerName', type: 'varchar', length: '255' },
+          { name: 'customerEmail', type: 'varchar', length: '255' },
+          { name: 'items', type: 'text' },
+          { name: 'totalAmount', type: 'decimal', precision: 10, scale: 2 },
+          { name: 'status', type: 'enum', enum: ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'], default: "'PENDING'" },
+          { name: 'shippingAddress', type: 'text' },
+          { name: 'createdAt', type: 'timestamp', default: 'CURRENT_TIMESTAMP' },
+          { name: 'updatedAt', type: 'timestamp', default: 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' },
         ],
       }),
       true
     );
 
-    // Criar índices para melhor performance
     await queryRunner.createIndex(
       'products',
       new TableIndex({

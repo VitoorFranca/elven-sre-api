@@ -10,19 +10,18 @@ export class ProductHandler {
     try {
       const startTime = Date.now();
       
-      logger.info('📚 Buscando todos os livros');
+      logger.info('Buscando todos os livros');
       
       const products = await this.productUseCase.getAllProducts();
       
       const duration = Date.now() - startTime;
       
-      // Capturar métrica de duração da query
       captureBusinessMetric('database_query_duration', duration / 1000, {
         operation: 'get_all_products',
         table: 'products'
       });
 
-      logger.info(`✅ Livros encontrados: ${products.length} livros em ${duration}ms`);
+      logger.info(`Livros encontrados: ${products.length} livros em ${duration}ms`);
       
       res.status(200).json({
         success: true,
@@ -32,7 +31,7 @@ export class ProductHandler {
       });
       
     } catch (error) {
-      logger.error('❌ Erro ao buscar livros:', error);
+      logger.error('Erro ao buscar livros:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',
@@ -46,12 +45,12 @@ export class ProductHandler {
       const { id } = req.params;
       const startTime = Date.now();
       
-      logger.info(`📚 Buscando livro com ID: ${id}`);
+      logger.info(`Buscando livro com ID: ${id}`);
       
       const product = await this.productUseCase.getProductById(parseInt(id));
       
       if (!product) {
-        logger.warn(`⚠️ Livro não encontrado: ${id}`);
+        logger.warn(`Livro não encontrado: ${id}`);
         res.status(404).json({
           success: false,
           error: 'Livro não encontrado',
@@ -62,14 +61,13 @@ export class ProductHandler {
       
       const duration = Date.now() - startTime;
       
-      // Capturar métrica de duração da query
       captureBusinessMetric('database_query_duration', duration / 1000, {
         operation: 'get_product_by_id',
         table: 'products',
         product_id: id
       });
 
-      logger.info(`✅ Livro encontrado: ${product.name} em ${duration}ms`);
+      logger.info(`Livro encontrado: ${product.name} em ${duration}ms`);
       
       res.status(200).json({
         success: true,
@@ -78,7 +76,7 @@ export class ProductHandler {
       });
       
     } catch (error) {
-      logger.error('❌ Erro ao buscar livro:', error);
+      logger.error('Erro ao buscar livro:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',
@@ -92,7 +90,7 @@ export class ProductHandler {
       const { name, description, price, stock } = req.body;
       const startTime = Date.now();
       
-      logger.info('📚 Criando novo livro:', { name, price });
+      logger.info('Criando novo livro:', { name, price });
       
       const product = await this.productUseCase.createProduct({
         name,
@@ -103,19 +101,17 @@ export class ProductHandler {
       
       const duration = Date.now() - startTime;
       
-      // Capturar métrica de negócio
       captureBusinessMetric('products_created', 1, {
         product_name: name,
         product_price: price
       });
       
-      // Capturar métrica de duração da query
       captureBusinessMetric('database_query_duration', duration / 1000, {
         operation: 'create_product',
         table: 'products'
       });
 
-      logger.info(`✅ Livro criado: ${product.name} (ID: ${product.id}) em ${duration}ms`);
+      logger.info(`Livro criado: ${product.name} (ID: ${product.id}) em ${duration}ms`);
       
       res.status(201).json({
         success: true,
@@ -125,7 +121,7 @@ export class ProductHandler {
       });
       
     } catch (error) {
-      logger.error('❌ Erro ao criar livro:', error);
+      logger.error('Erro ao criar livro:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',
@@ -140,7 +136,7 @@ export class ProductHandler {
       const { name, description, price, stock } = req.body;
       const startTime = Date.now();
       
-      logger.info(`📚 Atualizando livro com ID: ${id}`, { name, price });
+      logger.info(`Atualizando livro com ID: ${id}`, { name, price });
       
       const product = await this.productUseCase.updateProduct(parseInt(id), {
         name,
@@ -150,7 +146,7 @@ export class ProductHandler {
       });
       
       if (!product) {
-        logger.warn(`⚠️ Livro não encontrado para atualização: ${id}`);
+        logger.warn(`Livro não encontrado para atualização: ${id}`);
         res.status(404).json({
           success: false,
           error: 'Livro não encontrado',
@@ -161,21 +157,19 @@ export class ProductHandler {
       
       const duration = Date.now() - startTime;
       
-      // Capturar métrica de negócio
       captureBusinessMetric('products_updated', 1, {
         product_id: id,
         product_name: name,
         product_price: price
       });
       
-      // Capturar métrica de duração da query
       captureBusinessMetric('database_query_duration', duration / 1000, {
         operation: 'update_product',
         table: 'products',
         product_id: id
       });
 
-      logger.info(`✅ Livro atualizado: ${product.name} em ${duration}ms`);
+      logger.info(`Livro atualizado: ${product.name} em ${duration}ms`);
       
       res.status(200).json({
         success: true,
@@ -185,7 +179,7 @@ export class ProductHandler {
       });
       
     } catch (error) {
-      logger.error('❌ Erro ao atualizar livro:', error);
+      logger.error('Erro ao atualizar livro:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',
@@ -199,12 +193,12 @@ export class ProductHandler {
       const { id } = req.params;
       const startTime = Date.now();
       
-      logger.info(`📚 Deletando livro com ID: ${id}`);
+      logger.info(`Deletando livro com ID: ${id}`);
       
       const deleted = await this.productUseCase.deleteProduct(parseInt(id));
       
       if (!deleted) {
-        logger.warn(`⚠️ Livro não encontrado para deleção: ${id}`);
+        logger.warn(`Livro não encontrado para deleção: ${id}`);
         res.status(404).json({
           success: false,
           error: 'Livro não encontrado',
@@ -215,19 +209,17 @@ export class ProductHandler {
       
       const duration = Date.now() - startTime;
       
-      // Capturar métrica de negócio
       captureBusinessMetric('products_deleted', 1, {
         product_id: id
       });
       
-      // Capturar métrica de duração da query
       captureBusinessMetric('database_query_duration', duration / 1000, {
         operation: 'delete_product',
         table: 'products',
         product_id: id
       });
 
-      logger.info(`✅ Livro deletado com ID: ${id} em ${duration}ms`);
+      logger.info(`Livro deletado com ID: ${id} em ${duration}ms`);
       
       res.status(200).json({
         success: true,
@@ -236,7 +228,7 @@ export class ProductHandler {
       });
       
     } catch (error) {
-      logger.error('❌ Erro ao deletar livro:', error);
+      logger.error('Erro ao deletar livro:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',

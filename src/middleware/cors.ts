@@ -4,27 +4,22 @@ import { logger } from '../utils/logger';
 export function corsMiddleware(req: Request, res: Response, next: NextFunction) {
   const origin = req.headers.origin;
   
-  // Lista de origins permitidas
   const allowedOrigins = process.env.NODE_ENV === 'production'
     ? ['https://elven-sre.store', 'https://www.elven-sre.store']
     : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'];
 
-  // Verificar se a origin está permitida e definir o header apenas uma vez
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   } else if (!origin) {
-    // Permitir requisições sem origin (como mobile apps ou Postman)
     res.setHeader('Access-Control-Allow-Origin', '*');
   } else {
-    logger.warn(`🚫 Origin não permitida: ${origin}`);
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Temporariamente permitir todas
+    logger.warn(`Origin não permitida: ${origin}`);
+    res.setHeader('Access-Control-Allow-Origin', '*');
   }
 
-  // Headers padrão de CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD');
   
-  // Lista completa de headers permitidos para evitar problemas futuros
   const allowedHeaders = [
     'Content-Type',
     'Authorization', 
@@ -45,11 +40,10 @@ export function corsMiddleware(req: Request, res: Response, next: NextFunction) 
   
   res.setHeader('Access-Control-Allow-Headers', allowedHeaders.join(', '));
   res.setHeader('Access-Control-Expose-Headers', 'Content-Length, X-Requested-With, Access-Control-Allow-Origin, Access-Control-Allow-Credentials, Access-Control-Allow-Methods, Access-Control-Allow-Headers');
-  res.setHeader('Access-Control-Max-Age', '86400'); // Cache por 24 horas
+  res.setHeader('Access-Control-Max-Age', '86400');
 
-  // Responder imediatamente a requisições OPTIONS (preflight)
   if (req.method === 'OPTIONS') {
-    logger.info(`🔄 Preflight request para ${req.path} de ${origin}`);
+    logger.info(`Preflight request para ${req.path} de ${origin}`);
     res.status(200).end();
     return;
   }
@@ -57,15 +51,13 @@ export function corsMiddleware(req: Request, res: Response, next: NextFunction) 
   next();
 }
 
-// Middleware específico para debug de CORS
 export function corsDebugMiddleware(req: Request, res: Response, next: NextFunction) {
-  logger.info(`🌐 CORS Debug - Method: ${req.method}, Origin: ${req.headers.origin}, Path: ${req.path}`);
-  logger.info(`📋 Request Headers:`, req.headers);
+  logger.info(`CORS Debug - Method: ${req.method}, Origin: ${req.headers.origin}, Path: ${req.path}`);
+  logger.info('Request Headers:', req.headers);
   
-  // Log dos headers de resposta após a requisição
   const originalEnd = res.end;
   res.end = function(chunk?: any, encoding?: any, cb?: () => void) {
-    logger.info(`📋 Response Headers:`, res.getHeaders());
+    logger.info('Response Headers:', res.getHeaders());
     return originalEnd.call(this, chunk, encoding, cb);
   };
   
