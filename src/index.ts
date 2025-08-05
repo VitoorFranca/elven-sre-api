@@ -12,6 +12,7 @@ import { initializeTelemetry } from './utils/telemetry';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
 import { telemetryMiddleware, errorTelemetryMiddleware } from './middleware/telemetry';
+import { corsMiddleware, corsDebugMiddleware } from './middleware/cors';
 import { initializeDatabase } from './database/data-source';
 import healthRoutes from './routes/v1/healthRoutes';
 import productRoutes from './routes/v1/productRoutes';
@@ -33,35 +34,13 @@ async function initializeApp() {
       crossOriginEmbedderPolicy: false,
     }));
 
-    // Configurar CORS - Solução para problema de CORS com Chrome cache
-    app.use(cors({
-      origin: function (origin, callback) {
-        // Permitir requisições sem origin (como mobile apps ou Postman)
-        if (!origin) return callback(null, true);
-        
-        const allowedOrigins = process.env.NODE_ENV === 'production' ? [ 'https://elven-sre.store' ] : [ 'http://localhost:5173' ];
-        
-        if (allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          logger.warn(`🚫 Origin não permitida: ${origin}`);
-          callback(null, true); // Temporariamente permitir todas as origins para debug
-        }
-      },
-      credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
-      allowedHeaders: [
-        'Content-Type', 
-        'Authorization', 
-        'Origin', 
-        'Accept', 
-        'X-Requested-With',
-        'Cache-Control'
-      ],
-      exposedHeaders: ['Content-Length', 'X-Requested-With'],
-      preflightContinue: false,
-      optionsSuccessStatus: 200
-    }));
+    // Configurar CORS usando middleware personalizado
+    app.use(corsMiddleware);
+    
+    // Middleware de debug de CORS (opcional - remover em produção)
+    if (process.env.NODE_ENV !== 'production') {
+      app.use(corsDebugMiddleware);
+    }
 
     // Rate limiting
     const limiter = rateLimit({
@@ -98,7 +77,7 @@ async function initializeApp() {
     app.listen(PORT, () => {
       logger.info(`🚀 Servidor rodando na porta ${PORT}`);
       logger.info(`📊 OpenTelemetry configurado`);
-      logger.info(`🔒 CORS configurado para: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+      logger.info(`🔒 CORS configurado com middleware personalizado`);
       logger.info(`📈 Telemetria avançada ativa - capturando payloads e métricas detalhadas`);
     });
 
