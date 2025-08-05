@@ -11,7 +11,14 @@
     "test": "jest",
     "lint": "eslint src/**/*.ts",
     "docker:build": "docker build -t elven-api .",
-    "docker:run": "docker run -p 3000:3000 elven-api"
+    "docker:run": "docker run -p 3000:3000 elven-api",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "npm run typeorm migration:generate -- -d src/database/data-source.ts",
+    "migration:run": "npm run typeorm migration:run -- -d src/database/data-source.ts",
+    "migration:revert": "npm run typeorm migration:revert -- -d src/database/data-source.ts",
+    "migration:show": "npm run typeorm migration:show -- -d src/database/data-source.ts",
+    "schema:sync": "npm run typeorm schema:sync -- -d src/database/data-source.ts",
+    "schema:drop": "npm run typeorm schema:drop -- -d src/database/data-source.ts"
   },
   "keywords": [],
   "author": "elven-sre",

@@ -10,10 +10,11 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'elven_sre',
-  synchronize: process.env.NODE_ENV === 'development',
+  synchronize: false, // Desabilitar synchronize em produção
   logging: process.env.NODE_ENV === 'development',
   entities: [Product, Order],
-  migrations: [],
+  migrations: ['dist/database/migrations/*.js'], // Caminho para migrations compiladas
+  migrationsTableName: 'migrations',
   subscribers: [],
 });
 
@@ -41,36 +42,36 @@ const insertSampleData = async (): Promise<void> => {
   if (existingProducts === 0) {
     const sampleProducts = [
       {
-        name: 'Bouquet de Rosas Vermelhas',
-        description: 'Lindo bouquet com 12 rosas vermelhas, perfeito para declarações de amor',
+        name: 'O Senhor dos Anéis - A Sociedade do Anel',
+        description: 'Primeiro volume da trilogia épica de J.R.R. Tolkien, uma obra-prima da fantasia',
         price: 89.90,
         stock: 50,
-        category: 'Flores',
-        image: 'https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=400'
+        category: 'Fantasia',
+        image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400'
       },
       {
-        name: 'Bouquet de Girassóis',
-        description: 'Bouquet vibrante com girassóis frescos, ideal para presentear',
+        name: '1984 - George Orwell',
+        description: 'Distopia clássica que retrata uma sociedade totalitária e vigilante',
         price: 65.50,
         stock: 30,
-        category: 'Flores',
-        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400'
+        category: 'Ficção Científica',
+        image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400'
       },
       {
-        name: 'Orquídea Phalaenopsis',
-        description: 'Elegante orquídea em vaso, perfeita para decoração',
+        name: 'O Pequeno Príncipe',
+        description: 'Clássico da literatura mundial que encanta leitores de todas as idades',
         price: 120.00,
         stock: 20,
-        category: 'Plantas',
-        image: 'https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=400'
+        category: 'Infantil',
+        image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400'
       },
       {
-        name: 'Cesta de Frutas Especiais',
-        description: 'Cesta com frutas selecionadas, ideal para presentear',
+        name: 'A Arte da Guerra - Sun Tzu',
+        description: 'Tratado militar chinês que se tornou referência em estratégia e liderança',
         price: 75.00,
         stock: 25,
-        category: 'Frutas',
-        image: 'https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=400'
+        category: 'Filosofia',
+        image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400'
       }
     ];
 
@@ -90,7 +91,7 @@ const insertSampleData = async (): Promise<void> => {
         ]),
         totalAmount: 179.80,
         status: OrderStatus.PENDING,
-        shippingAddress: 'Rua das Flores, 123 - São Paulo, SP'
+        shippingAddress: 'Rua dos Livros, 123 - São Paulo, SP'
       },
       {
         customerName: 'João Santos',
