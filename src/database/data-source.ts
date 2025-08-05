@@ -2,6 +2,16 @@ import { DataSource } from 'typeorm';
 import { Product } from '../domain/entities/Product';
 import { Order, OrderStatus } from '../domain/entities/Order';
 import 'reflect-metadata';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+console.log(process.env.DB_HOST);
+console.log(process.env.DB_PORT);
+console.log(process.env.DB_USER);
+console.log(process.env.DB_PASSWORD);
+console.log(process.env.DB_NAME);
+console.log(process.env.NODE_ENV);
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
@@ -10,11 +20,9 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'elven_sre',
-  synchronize: false,
+  synchronize: true, // Usar synchronize para desenvolvimento
   logging: process.env.NODE_ENV === 'development',
   entities: [Product, Order],
-  migrations: ['dist/database/migrations/*.js'],
-  migrationsTableName: 'migrations',
   subscribers: [],
 });
 

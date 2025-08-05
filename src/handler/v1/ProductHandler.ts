@@ -87,16 +87,37 @@ export class ProductHandler {
 
   async createProduct(req: Request, res: Response): Promise<void> {
     try {
-      const { name, description, price, stock } = req.body;
+      const { 
+        name, 
+        description, 
+        price, 
+        stock, 
+        category,
+        author,
+        isbn,
+        pages,
+        language,
+        publisher,
+        publicationYear,
+        imageUrl
+      } = req.body;
       const startTime = Date.now();
       
-      logger.info('Criando novo livro:', { name, price });
+      logger.info('Criando novo livro:', { name, price, category });
       
       const product = await this.productUseCase.createProduct({
         name,
         description,
         price: parseFloat(price),
-        stock: parseInt(stock)
+        stock: parseInt(stock),
+        category,
+        author,
+        isbn,
+        pages: pages ? parseInt(pages) : undefined,
+        language,
+        publisher,
+        publicationYear: publicationYear ? parseInt(publicationYear) : undefined,
+        image: imageUrl
       });
       
       const duration = Date.now() - startTime;
@@ -133,16 +154,37 @@ export class ProductHandler {
   async updateProduct(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const { name, description, price, stock } = req.body;
+      const { 
+        name, 
+        description, 
+        price, 
+        stock,
+        category,
+        author,
+        isbn,
+        pages,
+        language,
+        publisher,
+        publicationYear,
+        imageUrl
+      } = req.body;
       const startTime = Date.now();
       
-      logger.info(`Atualizando livro com ID: ${id}`, { name, price });
+      logger.info(`Atualizando livro com ID: ${id}`, { name, price, category });
       
       const product = await this.productUseCase.updateProduct(parseInt(id), {
         name,
         description,
         price: parseFloat(price),
-        stock: parseInt(stock)
+        stock: parseInt(stock),
+        category,
+        author,
+        isbn,
+        pages: pages ? parseInt(pages) : undefined,
+        language,
+        publisher,
+        publicationYear: publicationYear ? parseInt(publicationYear) : undefined,
+        image: imageUrl
       });
       
       if (!product) {

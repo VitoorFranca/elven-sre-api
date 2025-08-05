@@ -16,6 +16,9 @@ import { initializeDatabase } from './database/data-source';
 import healthRoutes from './routes/v1/healthRoutes';
 import productRoutes from './routes/v1/productRoutes';
 import orderRoutes from './routes/v1/orderRoutes';
+import { createMetricsRoutes } from './routes/v1/metricsRoutes';
+import adminRoutes from './routes/v1/adminRoutes';
+import { initializeDependencies } from './config/dependencies';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -49,9 +52,17 @@ async function initializeApp() {
     app.use(express.json({ limit: '10mb' }));
     app.use(express.urlencoded({ extended: true }));
 
+    // Inicializar dependências para métricas
+    const dependencies = initializeDependencies();
+    logger.info('Dependências inicializadas com sucesso');
+
+    // Configurar rotas
     app.use('/api/health', healthRoutes);
     app.use('/api/products', productRoutes);
     app.use('/api/orders', orderRoutes);
+    app.use('/api/metrics', createMetricsRoutes(dependencies.metricsHandler));
+    app.use('/api/admin', adminRoutes);
+    logger.info('Rotas configuradas com sucesso');
 
     app.use(errorTelemetryMiddleware);
     app.use(errorHandler);
