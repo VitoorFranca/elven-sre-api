@@ -17,37 +17,18 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-
-            # Caminho para o app
             APP_DIR=elven-sre-api
 
-            # Verificar se o diretório já existe
             if [ -d "$APP_DIR" ]; then
               echo "Diretório $APP_DIR já existe, fazendo pull..."
               cd $APP_DIR
-              
-              # Backup da pasta SSL se existir
-              if [ -d "ssl" ]; then
-                echo "Fazendo backup da pasta SSL..."
-                cp -r ssl ../ssl-backup-$(date +%Y%m%d-%H%M%S)
-              fi
-              
-              # Fazer pull das mudanças
               git pull origin master
-              
-              # Restaurar pasta SSL se existia backup
-              if [ -d "../ssl-backup-*" ] && [ ! -d "ssl" ]; then
-                echo "Restaurando pasta SSL..."
-                cp -r ../ssl-backup-* ssl
-              fi
             else
               echo "Diretório $APP_DIR não existe, clonando repositório..."
-              # Clona o repositório na EC2
               git clone https://github.com/VitoorFranca/elven-sre-api.git $APP_DIR
               cd $APP_DIR
             fi
 
-            # Cria arquivo .env com as variáveis
             cat <<EOF > .env
             NODE_ENV=production
             PORT=3000
@@ -61,6 +42,5 @@ jobs:
             DB_NAME=${{ secrets.DB_NAME }}
             EOF
 
-            # Sobe os containers com build
             docker compose down
             docker compose up --build -d
