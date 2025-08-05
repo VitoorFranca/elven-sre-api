@@ -9,20 +9,20 @@ export function corsMiddleware(req: Request, res: Response, next: NextFunction) 
     ? ['https://elven-sre.store', 'https://www.elven-sre.store']
     : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'];
 
-  // Verificar se a origin está permitida
+  // Verificar se a origin está permitida e definir o header apenas uma vez
   if (origin && allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Origin', origin);
   } else if (!origin) {
     // Permitir requisições sem origin (como mobile apps ou Postman)
-    res.header('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', '*');
   } else {
     logger.warn(`🚫 Origin não permitida: ${origin}`);
-    res.header('Access-Control-Allow-Origin', '*'); // Temporariamente permitir todas
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Temporariamente permitir todas
   }
 
   // Headers padrão de CORS
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD');
   
   // Lista completa de headers permitidos para evitar problemas futuros
   const allowedHeaders = [
@@ -43,9 +43,9 @@ export function corsMiddleware(req: Request, res: Response, next: NextFunction) 
     'Referer'
   ];
   
-  res.header('Access-Control-Allow-Headers', allowedHeaders.join(', '));
-  res.header('Access-Control-Expose-Headers', 'Content-Length, X-Requested-With, Access-Control-Allow-Origin, Access-Control-Allow-Credentials, Access-Control-Allow-Methods, Access-Control-Allow-Headers');
-  res.header('Access-Control-Max-Age', '86400'); // Cache por 24 horas
+  res.setHeader('Access-Control-Allow-Headers', allowedHeaders.join(', '));
+  res.setHeader('Access-Control-Expose-Headers', 'Content-Length, X-Requested-With, Access-Control-Allow-Origin, Access-Control-Allow-Credentials, Access-Control-Allow-Methods, Access-Control-Allow-Headers');
+  res.setHeader('Access-Control-Max-Age', '86400'); // Cache por 24 horas
 
   // Responder imediatamente a requisições OPTIONS (preflight)
   if (req.method === 'OPTIONS') {
