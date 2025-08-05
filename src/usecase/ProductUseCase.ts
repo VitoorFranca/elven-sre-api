@@ -106,7 +106,7 @@ export class ProductUseCase implements IProductUseCase {
           entity: 'products'
         });
         
-        // Incrementar contador de produtos criados
+        // Incrementar contador de livros criados
         metrics.productsCreated.add(1, {
           product_name: newProduct.name,
           category: newProduct.category
@@ -148,7 +148,7 @@ export class ProductUseCase implements IProductUseCase {
         });
         
         if (updatedProduct) {
-          // Incrementar contador de produtos atualizados
+          // Incrementar contador de livros atualizados
           metrics.productsUpdated.add(1, {
             product_name: updatedProduct.name,
             category: updatedProduct.category
@@ -190,7 +190,7 @@ export class ProductUseCase implements IProductUseCase {
         });
         
         if (result) {
-          // Incrementar contador de produtos deletados
+          // Incrementar contador de livros deletados
           metrics.productsDeleted.add(1, {
             product_id: id.toString()
           });

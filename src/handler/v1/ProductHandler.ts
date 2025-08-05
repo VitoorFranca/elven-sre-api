@@ -10,7 +10,7 @@ export class ProductHandler {
     try {
       const startTime = Date.now();
       
-      logger.info('📦 Buscando todos os produtos');
+      logger.info('📚 Buscando todos os livros');
       
       const products = await this.productUseCase.getAllProducts();
       
@@ -22,7 +22,7 @@ export class ProductHandler {
         table: 'products'
       });
 
-      logger.info(`✅ Produtos encontrados: ${products.length} produtos em ${duration}ms`);
+      logger.info(`✅ Livros encontrados: ${products.length} livros em ${duration}ms`);
       
       res.status(200).json({
         success: true,
@@ -32,7 +32,7 @@ export class ProductHandler {
       });
       
     } catch (error) {
-      logger.error('❌ Erro ao buscar produtos:', error);
+      logger.error('❌ Erro ao buscar livros:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',
@@ -46,16 +46,16 @@ export class ProductHandler {
       const { id } = req.params;
       const startTime = Date.now();
       
-      logger.info(`📦 Buscando produto com ID: ${id}`);
+      logger.info(`📚 Buscando livro com ID: ${id}`);
       
       const product = await this.productUseCase.getProductById(parseInt(id));
       
       if (!product) {
-        logger.warn(`⚠️ Produto não encontrado: ${id}`);
+        logger.warn(`⚠️ Livro não encontrado: ${id}`);
         res.status(404).json({
           success: false,
-          error: 'Produto não encontrado',
-          message: `Produto com ID ${id} não foi encontrado`
+          error: 'Livro não encontrado',
+          message: `Livro com ID ${id} não foi encontrado`
         });
         return;
       }
@@ -69,7 +69,7 @@ export class ProductHandler {
         product_id: id
       });
 
-      logger.info(`✅ Produto encontrado: ${product.name} em ${duration}ms`);
+      logger.info(`✅ Livro encontrado: ${product.name} em ${duration}ms`);
       
       res.status(200).json({
         success: true,
@@ -78,7 +78,7 @@ export class ProductHandler {
       });
       
     } catch (error) {
-      logger.error('❌ Erro ao buscar produto:', error);
+      logger.error('❌ Erro ao buscar livro:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',
@@ -92,7 +92,7 @@ export class ProductHandler {
       const { name, description, price, stock } = req.body;
       const startTime = Date.now();
       
-      logger.info('📦 Criando novo produto:', { name, price });
+      logger.info('📚 Criando novo livro:', { name, price });
       
       const product = await this.productUseCase.createProduct({
         name,
@@ -115,17 +115,17 @@ export class ProductHandler {
         table: 'products'
       });
 
-      logger.info(`✅ Produto criado: ${product.name} (ID: ${product.id}) em ${duration}ms`);
+      logger.info(`✅ Livro criado: ${product.name} (ID: ${product.id}) em ${duration}ms`);
       
       res.status(201).json({
         success: true,
         data: product,
-        message: 'Produto criado com sucesso',
+        message: 'Livro criado com sucesso',
         duration: `${duration}ms`
       });
       
     } catch (error) {
-      logger.error('❌ Erro ao criar produto:', error);
+      logger.error('❌ Erro ao criar livro:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',
@@ -140,7 +140,7 @@ export class ProductHandler {
       const { name, description, price, stock } = req.body;
       const startTime = Date.now();
       
-      logger.info(`📦 Atualizando produto com ID: ${id}`, { name, price });
+      logger.info(`📚 Atualizando livro com ID: ${id}`, { name, price });
       
       const product = await this.productUseCase.updateProduct(parseInt(id), {
         name,
@@ -150,11 +150,11 @@ export class ProductHandler {
       });
       
       if (!product) {
-        logger.warn(`⚠️ Produto não encontrado para atualização: ${id}`);
+        logger.warn(`⚠️ Livro não encontrado para atualização: ${id}`);
         res.status(404).json({
           success: false,
-          error: 'Produto não encontrado',
-          message: `Produto com ID ${id} não foi encontrado`
+          error: 'Livro não encontrado',
+          message: `Livro com ID ${id} não foi encontrado`
         });
         return;
       }
@@ -175,17 +175,17 @@ export class ProductHandler {
         product_id: id
       });
 
-      logger.info(`✅ Produto atualizado: ${product.name} em ${duration}ms`);
+      logger.info(`✅ Livro atualizado: ${product.name} em ${duration}ms`);
       
       res.status(200).json({
         success: true,
         data: product,
-        message: 'Produto atualizado com sucesso',
+        message: 'Livro atualizado com sucesso',
         duration: `${duration}ms`
       });
       
     } catch (error) {
-      logger.error('❌ Erro ao atualizar produto:', error);
+      logger.error('❌ Erro ao atualizar livro:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',
@@ -199,16 +199,16 @@ export class ProductHandler {
       const { id } = req.params;
       const startTime = Date.now();
       
-      logger.info(`📦 Deletando produto com ID: ${id}`);
+      logger.info(`📚 Deletando livro com ID: ${id}`);
       
       const deleted = await this.productUseCase.deleteProduct(parseInt(id));
       
       if (!deleted) {
-        logger.warn(`⚠️ Produto não encontrado para deleção: ${id}`);
+        logger.warn(`⚠️ Livro não encontrado para deleção: ${id}`);
         res.status(404).json({
           success: false,
-          error: 'Produto não encontrado',
-          message: `Produto com ID ${id} não foi encontrado`
+          error: 'Livro não encontrado',
+          message: `Livro com ID ${id} não foi encontrado`
         });
         return;
       }
@@ -227,16 +227,16 @@ export class ProductHandler {
         product_id: id
       });
 
-      logger.info(`✅ Produto deletado com ID: ${id} em ${duration}ms`);
+      logger.info(`✅ Livro deletado com ID: ${id} em ${duration}ms`);
       
       res.status(200).json({
         success: true,
-        message: 'Produto deletado com sucesso',
+        message: 'Livro deletado com sucesso',
         duration: `${duration}ms`
       });
       
     } catch (error) {
-      logger.error('❌ Erro ao deletar produto:', error);
+      logger.error('❌ Erro ao deletar livro:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',

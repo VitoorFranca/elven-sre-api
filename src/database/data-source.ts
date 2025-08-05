@@ -37,7 +37,7 @@ const insertSampleData = async (): Promise<void> => {
   const productRepository = AppDataSource.getRepository(Product);
   const orderRepository = AppDataSource.getRepository(Order);
 
-  // Verificar se já existem produtos
+  // Verificar se já existem livros
   const existingProducts = await productRepository.count();
   if (existingProducts === 0) {
     const sampleProducts = [
@@ -76,7 +76,7 @@ const insertSampleData = async (): Promise<void> => {
     ];
 
     await productRepository.save(sampleProducts);
-    console.log('Sample products inserted');
+    console.log('Sample books inserted');
   }
 
   // Verificar se já existem pedidos

@@ -148,15 +148,15 @@ export function createCustomMetrics() {
   
   // Contadores de negócio
   const productsCreated = meter.createCounter('products_created_total', {
-    description: 'Total de produtos criados'
+    description: 'Total de livros criados'
   });
   
   const productsUpdated = meter.createCounter('products_updated_total', {
-    description: 'Total de produtos atualizados'
+    description: 'Total de livros atualizados'
   });
   
   const productsDeleted = meter.createCounter('products_deleted_total', {
-    description: 'Total de produtos deletados'
+    description: 'Total de livros deletados'
   });
   
   const ordersCreated = meter.createCounter('orders_created_total', {
