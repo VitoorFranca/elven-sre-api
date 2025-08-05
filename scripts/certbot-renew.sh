@@ -5,7 +5,7 @@
 # 0 3 1 */2 * /c/Users/Vitor/Desktop/Projects/elven-sre/api/scripts/certbot-renew.sh >> /c/Users/Vitor/Desktop/Projects/elven-sre/api/scripts/certbot-renew.log 2>&1
 
 # Parar Nginx
-docker-compose stop nginx
+docker compose stop nginx
 
 # Renovar certificado
 sudo certbot renew
@@ -16,4 +16,4 @@ sudo cp -r /etc/letsencrypt/archive/api.elven-sre.store ssl/
 sudo chown -R $USER:$USER ssl/
 
 # Reiniciar Nginx
-docker-compose start nginx
+docker compose start nginx
