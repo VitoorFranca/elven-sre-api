@@ -23,7 +23,27 @@ export function corsMiddleware(req: Request, res: Response, next: NextFunction) 
   // Headers padrão de CORS
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Origin, Accept, X-Requested-With, Cache-Control, X-Forwarded-For, X-Real-IP, X-Forwarded-Proto, Pragma');
+  
+  // Lista completa de headers permitidos para evitar problemas futuros
+  const allowedHeaders = [
+    'Content-Type',
+    'Authorization', 
+    'Origin',
+    'Accept',
+    'X-Requested-With',
+    'Cache-Control',
+    'X-Forwarded-For',
+    'X-Real-IP',
+    'X-Forwarded-Proto',
+    'Pragma',
+    'Expires',
+    'If-Modified-Since',
+    'If-None-Match',
+    'User-Agent',
+    'Referer'
+  ];
+  
+  res.header('Access-Control-Allow-Headers', allowedHeaders.join(', '));
   res.header('Access-Control-Expose-Headers', 'Content-Length, X-Requested-With, Access-Control-Allow-Origin, Access-Control-Allow-Credentials, Access-Control-Allow-Methods, Access-Control-Allow-Headers');
   res.header('Access-Control-Max-Age', '86400'); // Cache por 24 horas
 
