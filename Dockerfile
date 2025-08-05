@@ -12,11 +12,11 @@ RUN adduser -S nodejs -u 1001
 WORKDIR /app
 
 # Copiar arquivos de dependências primeiro (melhor cache)
-COPY package*.json ./
+COPY package*.json ./  
 COPY yarn.lock ./
 
 # Instalar todas as dependências (incluindo devDependencies para build)
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile && yarn cache clean
 
 # Copiar arquivo de configuração do TypeScript
 COPY tsconfig.json ./
@@ -26,9 +26,6 @@ COPY src/ ./src/
 
 # Compilar TypeScript
 RUN yarn build
-
-# Remover devDependencies após build
-RUN yarn install --frozen-lockfile --production && yarn cache clean
 
 # Stage de produção
 FROM node:18-alpine AS production
@@ -53,7 +50,7 @@ RUN yarn install --frozen-lockfile --production && yarn cache clean
 # Copiar código compilado do stage anterior
 COPY --from=builder /app/dist ./dist
 
-# Copiar arquivos necessários
+# Copiar arquivos necessários da pasta src (se usados em runtime)
 COPY --from=builder /app/src/config ./src/config
 COPY --from=builder /app/src/database ./src/database
 COPY --from=builder /app/src/domain ./src/domain
@@ -86,4 +83,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 ENTRYPOINT ["dumb-init", "--"]
 
 # Comando para iniciar a aplicação
-CMD ["node", "dist/index.js"] 
+CMD ["node", "dist/index.js"]
