@@ -50,10 +50,3 @@ jobs:
             # Parar containers existentes
             docker compose down
             docker compose up --build -d
-
-            sleep 10
-
-            # Verificar logs e status dos containers
-            docker compose logs -f
-            docker compose ps
-            docker ps
