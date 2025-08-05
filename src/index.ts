@@ -39,9 +39,7 @@ async function initializeApp() {
         // Permitir requisições sem origin (como mobile apps ou Postman)
         if (!origin) return callback(null, true);
         
-        const allowedOrigins = [
-          process.env.FRONTEND_URL || 'http://localhost:5173'
-        ];
+        const allowedOrigins = process.env.NODE_ENV === 'production' ? [ 'https://elven-sre.store' ] : [ 'http://localhost:5173' ];
         
         if (allowedOrigins.includes(origin)) {
           callback(null, true);
