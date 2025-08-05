@@ -44,9 +44,6 @@ jobs:
             SSL_EMAIL=${{ secrets.SSL_EMAIL }}
             EOF
 
-            # Limpar containers e volumes antigos
-            docker system prune -a --volumes -f
-
             # Parar containers existentes
             docker compose down
             docker compose up --build -d
